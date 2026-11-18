@@ -1,60 +1,72 @@
-<!DOCTYPE html>
+{% load static %}
+<!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Электронный журнал{% endblock %}</title>
-    {% load static %}
-    <link href="{% static 'journal/css/styles.css' %}" rel="stylesheet">
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="{% static 'journal/css/styles.css' %}">
 </head>
-<body>
-    <nav>
-        <ul class="main-navigation-menu">
-            {% for item in menu %}
-                <li><a href="{% url item.url_name %}">{{ item.title }}</a></li>
-            {% endfor %}
-            
-            {% if not user.is_authenticated %}
-                <li><a href="{% url 'login' %}">Войти</a></li>
-            {% endif %}
-        </ul>
+<body class="bg-light">
 
-        {% if user.is_authenticated %}
-        <ul class="main-navigation-menu" style="margin-top: 5px;">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">Электронный журнал</a>
+        
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {% for item in menu %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url item.url_name %}">{{ item.title }}</a>
+                    </li>
+                {% endfor %}
+                {% if user.is_authenticated %}
+                    {% if user.is_teacher %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'teacher_groups' %}">Группы (ЛР3)</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'teacher_lessons' %}">Занятия (ЛР3)</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'attendance_report' %}">Отчёт по пропускам</a></li>
 
-            {% if user.is_teacher %}
-                <li><a href="{% url 'attendance_add' %}">Отметить посещаемость</a></li>
-                <li><a href="{% url 'attendance_stats' %}">Статистика студентов</a></li>
-                <li><a href="{% url 'group_stats' %}">Статистика групп</a></li>
-                <li><a href="{% url 'stats_by_name' %}">Должники (пропуски > 5)</a></li>
-                
-                {% if request.resolver_match.url_name in 'attendance_stats group_stats stats_by_name stats_by_count' %}
-                    <li><a href="{% url 'home' %}">Назад</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'attendance_add' %}">Отметить посещаемость</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'attendance_stats' %}">Статистика студентов</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'group_stats' %}">Статистика групп</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'stats_by_name' %}">Должники (пропуски > 5)</a></li>
+                    {% endif %}
+                    
+                    {% if user.is_student and not user.is_teacher %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">Мой профиль</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'my_attendance' %}">Моя посещаемость</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'student_attendance' %}">Посещаемость (ЛР3)</a></li>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
+            </ul>
 
-            {% if user.is_student and not user.is_teacher %}
-                <li><a href="{% url 'profile' %}">Мой профиль</a></li>
-                <li><a href="{% url 'my_attendance' %}">Моя посещаемость</a></li>
-            {% endif %}
+            <div class="d-flex align-items-center">
+                {% if user.is_authenticated %}
+                    <span class="navbar-text text-light me-3">Вы вошли как: <strong>{{ user.username }}</strong></span>
+                    <form method="post" action="{% url 'logout' %}" class="mb-0">
+                        {% csrf_token %}
+                        <button class="btn btn-outline-light btn-sm" type="submit">Выйти</button>
+                    </form>
+                {% else %}
+                    <a class="btn btn-outline-light btn-sm me-2" href="{% url 'login' %}">Войти</a>
+                    <a class="btn btn-primary btn-sm" href="{% url 'register' %}">Регистрация</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
 
-            <li>
-                <form action="{% url 'logout' %}" method="post" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit" style="background: none; border: none; color: #1a0dab; cursor: pointer; font-family: Arial, sans-serif; font-size: 16px; padding: 0; text-decoration: underline;">
-                        Выйти ({{ user.username }})
-                    </button>
-                </form>
-            </li>
-        </ul>
-        {% endif %}
-    </nav>
+<main class="container py-4">
+    {% block content %}{% endblock %}
+</main>
 
-    <main class="content">
-        {% block content %}{% endblock %}
-    </main>
+<footer class="bg-dark text-light text-center py-3 mt-auto">
+    <div class="container">
+        <p class="mb-0">&copy; «Электронный журнал»</p>
+    </div>
+</footer>
 
-    <footer class="site-footer">
-        <p>&copy; «Электронный журнал»</p>
-    </footer>
+{% block scripts %}{% endblock %}
 </body>
 </html>

@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
-from .models import Attendance, Group
+from .models import Attendance, Group, Subject, Period
 
 User = get_user_model()
 
@@ -25,3 +25,7 @@ class AttendanceForm(forms.ModelForm):
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
         }
+
+class LessonFilterForm(forms.Form):
+    subject = forms.ModelChoiceField(queryset=Subject.objects.all(), required=False, label='Дисциплина', empty_label="Все дисциплины")
+    period = forms.ModelChoiceField(queryset=Period.objects.all(), required=False, label='Период', empty_label="Все периоды")

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Отчёт по пропускам{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Сводный отчёт по пропускам занятий</h1>
+    <a href="{% url 'teacher_lessons' %}" class="btn btn-outline-secondary btn-sm">Назад к списку занятий</a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover align-middle mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col" class="ps-3">Учебная группа</th>
+                    <th scope="col">ФИО Студента</th>
+                    <th scope="col">Дисциплина</th>
+                    <th scope="col" class="text-center pe-3" style="width: 220px;">Количество пропусков</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in report_data %}
+                <tr>
+                    <td class="ps-3">{{ item.student__group__name }}</td>
+                    <td class="fw-medium">{{ item.student__name }}</td>
+                    <td>{{ item.lesson__subject__name }}</td>
+                    <td class="text-center pe-3 text-danger fw-bold fs-5">{{ item.absences_count }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center text-muted py-4">Пропусков по вашим дисциплинам не зафиксировано.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

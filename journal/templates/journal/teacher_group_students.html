@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Студенты группы{% endblock %}
+
+{% block content %}
+    <h1 class="h3 mb-3">Студенты группы {{ group.name }}</h1>
+    
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>ФИО</th>
+                    <th>Статус</th>
+                    <th>Учётная запись</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in page_obj %}
+                    <tr>
+                        <td>{{ student.name }}</td>
+                        <td>{{ student.status|default:'—' }}</td>
+                        <td>{{ student.user_profile.username }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3">В группе нет студентов.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% include 'journal/pagination.html' %}
+{% endblock %}

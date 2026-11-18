@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Моя посещаемость{% endblock %}
+
+{% block content %}
+    <h1 class="h3 mb-3">Моя посещаемость</h1>
+    
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Дисциплина</th>
+                    <th>Был на занятии</th>
+                    <th>Статус</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in page_obj %}
+                    <tr>
+                        <td>{{ record.date|date:'d.m.Y' }}</td>
+                        <td>
+                            {% if record.lesson %}
+                                {{ record.lesson.subject.name }}
+                            {% else %}
+                                Архивированная запись
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if record.present %}
+                                Да
+                            {% else %}
+                                Нет
+                            {% endif %}
+                        </td>
+                        <td>{{ record.status.name|default:'—' }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4">Отметок посещаемости нет.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% include 'journal/pagination.html' %}
+{% endblock %}
